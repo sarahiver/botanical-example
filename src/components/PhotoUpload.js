@@ -1,18 +1,53 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
 
-const float = keyframes`
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+// ═══════════════════════════════════════════════════════════════════════════════
+// ANIMATIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const fadeInUp = keyframes`
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 `;
+
+const float = keyframes`
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(3deg); }
+`;
+
+const pulse = keyframes`
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+`;
+
+const shimmer = keyframes`
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+`;
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// STYLED COMPONENTS
+// ═══════════════════════════════════════════════════════════════════════════════
 
 const Section = styled.section`
   padding: 8rem 2rem;
-  background: var(--forest);
+  background: var(--cream-dark);
+  position: relative;
+  overflow: hidden;
+`;
+
+const FloatingElement = styled.div`
+  position: absolute;
+  opacity: 0.08;
+  pointer-events: none;
+  animation: ${float} ${p => p.duration || 8}s ease-in-out infinite;
+  animation-delay: ${p => p.delay || 0}s;
+  
+  svg { fill: var(--sage); }
 `;
 
 const Container = styled.div`
-  max-width: 650px;
+  max-width: 900px;
   margin: 0 auto;
 `;
 
@@ -29,74 +64,196 @@ const Eyebrow = styled.div`
   font-size: 0.7rem;
   letter-spacing: 0.4em;
   text-transform: uppercase;
-  color: var(--sage-light);
+  color: var(--sage-dark);
   margin-bottom: 1rem;
 `;
 
 const Title = styled.h2`
   font-family: 'Playfair Display', serif;
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  color: var(--cream);
-  margin-bottom: 1rem;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 400;
+  color: var(--forest);
 `;
 
 const Subtitle = styled.p`
   font-family: 'Lato', sans-serif;
-  font-size: 0.95rem;
-  color: rgba(245,241,235,0.7);
-  line-height: 1.6;
+  font-size: 1rem;
+  color: var(--text-light);
+  margin-top: 1rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.7;
 `;
 
-const UploadArea = styled.div`
+// Stats
+const Stats = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-bottom: 3rem;
   opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '30px'});
-  transition: all 0.8s ease;
+  transition: opacity 0.8s ease;
   transition-delay: 0.2s;
-`;
-
-const DropZone = styled.div`
-  padding: 4rem 2rem;
-  background: ${p => p.isDragging ? 'rgba(139,157,131,0.2)' : 'rgba(245,241,235,0.05)'};
-  border: 2px dashed ${p => p.isDragging ? 'var(--sage)' : 'rgba(139,157,131,0.3)'};
-  border-radius: 30px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
   
-  &:hover {
-    border-color: var(--sage);
-    background: rgba(139,157,131,0.1);
+  @media (max-width: 500px) {
+    gap: 1.5rem;
   }
 `;
 
-const DropIcon = styled.div`
-  font-size: 3rem;
+const StatItem = styled.div`
+  text-align: center;
+  
+  .number {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-style: italic;
+    color: var(--sage);
+  }
+  
+  .label {
+    font-family: 'Lato', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-top: 0.25rem;
+  }
+`;
+
+// Upload Zone
+const UploadZone = styled.div`
+  background: var(--cream);
+  border: 2px dashed ${p => p.isDragging ? 'var(--sage)' : 'rgba(139, 157, 131, 0.4)'};
+  border-radius: 30px;
+  padding: 4rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: ${p => p.visible ? 1 : 0};
+  transform: translateY(${p => p.visible ? 0 : '30px'});
+  transition: all 0.6s ease;
+  transition-delay: 0.3s;
+  position: relative;
+  overflow: hidden;
+  
+  ${p => p.isDragging && `
+    background: rgba(139, 157, 131, 0.1);
+    border-color: var(--sage);
+    transform: scale(1.02);
+  `}
+  
+  &:hover {
+    border-color: var(--sage);
+    background: rgba(139, 157, 131, 0.05);
+  }
+`;
+
+const UploadIcon = styled.div`
+  font-size: 4rem;
   margin-bottom: 1.5rem;
   animation: ${float} 3s ease-in-out infinite;
 `;
 
-const DropText = styled.p`
+const UploadTitle = styled.h3`
   font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-  color: var(--cream);
-  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  color: var(--forest);
+  margin-bottom: 0.75rem;
 `;
 
-const DropSubtext = styled.p`
+const UploadText = styled.p`
+  font-family: 'Lato', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-bottom: 1.5rem;
+`;
+
+const UploadButton = styled.label`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: var(--sage);
+  color: var(--cream);
+  border-radius: 30px;
   font-family: 'Lato', sans-serif;
   font-size: 0.8rem;
-  color: rgba(245,241,235,0.5);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: var(--sage-dark);
+    transform: translateY(-2px);
+  }
+  
+  input {
+    display: none;
+  }
 `;
 
-const HiddenInput = styled.input`
-  display: none;
+const FileTypes = styled.p`
+  font-family: 'Lato', sans-serif;
+  font-size: 0.75rem;
+  color: var(--sage-light);
+  margin-top: 1.5rem;
 `;
 
+// Name Input
+const NameInput = styled.div`
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--cream-dark);
+  border-radius: 15px;
+  
+  label {
+    display: block;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+    margin-bottom: 0.5rem;
+  }
+  
+  input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.95rem;
+    color: var(--forest);
+    background: var(--cream);
+    border: 1px solid rgba(139, 157, 131, 0.3);
+    border-radius: 10px;
+    
+    &:focus {
+      outline: none;
+      border-color: var(--sage);
+    }
+    
+    &::placeholder {
+      color: var(--sage-light);
+    }
+  }
+`;
+
+// Preview Grid
 const PreviewGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   margin-top: 2rem;
+  
+  @media (max-width: 700px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  @media (max-width: 500px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 `;
 
 const PreviewItem = styled.div`
@@ -104,199 +261,276 @@ const PreviewItem = styled.div`
   aspect-ratio: 1;
   border-radius: 15px;
   overflow: hidden;
-  
-  img { width: 100%; height: 100%; object-fit: cover; }
-`;
-
-const RemoveBtn = styled.button`
-  position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
-  width: 24px;
-  height: 24px;
   background: var(--cream);
-  color: var(--forest);
-  border: none;
-  border-radius: 50%;
-  font-size: 0.7rem;
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.3s ease;
   
-  ${PreviewItem}:hover & { opacity: 1; }
-`;
-
-const SubmitSection = styled.div`
-  margin-top: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const GuestName = styled.input`
-  width: 100%;
-  padding: 1rem;
-  font-family: 'Lato', sans-serif;
-  font-size: 0.95rem;
-  color: var(--cream);
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(139,157,131,0.3);
-  border-radius: 15px;
-  
-  &:focus { outline: none; border-color: var(--sage); }
-  &::placeholder { color: rgba(245,241,235,0.4); }
-`;
-
-const SubmitBtn = styled.button`
-  padding: 1.2rem;
-  font-family: 'Lato', sans-serif;
-  font-size: 0.8rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--forest);
-  background: var(--sage);
-  border: none;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
-  &:hover:not(:disabled) {
-    background: var(--sage-light);
-    transform: translateY(-2px);
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &.uploading::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(139, 157, 131, 0.3),
+      transparent
+    );
+    background-size: 200% 100%;
+    animation: ${shimmer} 1.5s infinite;
+  }
 `;
 
+const RemoveButton = styled.button`
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 28px;
+  height: 28px;
+  background: rgba(45, 59, 45, 0.8);
+  color: var(--cream);
+  border: none;
+  border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+  
+  ${PreviewItem}:hover & {
+    opacity: 1;
+  }
+  
+  &:hover {
+    background: var(--forest);
+  }
+`;
+
+// Success Message
 const SuccessMessage = styled.div`
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(139, 157, 131, 0.15);
+  border-radius: 15px;
   text-align: center;
-  padding: 3rem;
+  border: 1px solid rgba(139, 157, 131, 0.3);
   
-  .icon { font-size: 3rem; margin-bottom: 1rem; }
-  h3 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--sage); margin-bottom: 1rem; }
-  p { font-family: 'Lato', sans-serif; color: rgba(245,241,235,0.7); }
+  .icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    color: var(--forest);
+  }
 `;
 
-const Stats = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 4rem;
-  margin-top: 3rem;
-  padding: 2rem;
-  background: rgba(245,241,235,0.05);
-  border-radius: 20px;
-  opacity: ${p => p.visible ? 1 : 0};
-  transition: opacity 0.8s ease;
-  transition-delay: 0.3s;
-`;
-
-const StatItem = styled.div`
-  text-align: center;
-  
-  .number { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--sage); }
-  .label { font-family: 'Lato', sans-serif; font-size: 0.65rem; color: rgba(245,241,235,0.5); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 0.25rem; }
-`;
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
 
 function PhotoUpload({
-  maxFiles = 10,
-  acceptedTypes = ['image/jpeg', 'image/png', 'image/heic'],
-  totalPhotos = 64,
-  totalGuests = 18,
   onUpload = (files, guestName) => console.log('Upload:', files, guestName),
+  totalPhotos = 0,
+  totalGuests = 0,
+  maxFiles = 10,
+  acceptedTypes = ['image/jpeg', 'image/png', 'image/webp'],
 }) {
   const [visible, setVisible] = useState(false);
-  const [files, setFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [previews, setPreviews] = useState([]);
   const [guestName, setGuestName] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  const fileInputRef = useRef(null);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
   const sectionRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) setVisible(true); }, { threshold: 0.2 });
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      { threshold: 0.2 }
+    );
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
   }, []);
 
-  const handleDrop = (e) => {
+  const handleDragOver = useCallback((e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e) => {
     e.preventDefault();
     setIsDragging(false);
-    const newFiles = Array.from(e.dataTransfer.files).filter(f => acceptedTypes.includes(f.type));
-    addFiles(newFiles);
+  }, []);
+
+  const processFiles = useCallback((files) => {
+    const validFiles = Array.from(files)
+      .filter(file => acceptedTypes.includes(file.type))
+      .slice(0, maxFiles - previews.length);
+
+    const newPreviews = validFiles.map(file => ({
+      file,
+      url: URL.createObjectURL(file),
+      uploading: false,
+    }));
+
+    setPreviews(prev => [...prev, ...newPreviews]);
+  }, [acceptedTypes, maxFiles, previews.length]);
+
+  const handleDrop = useCallback((e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    processFiles(e.dataTransfer.files);
+  }, [processFiles]);
+
+  const handleFileChange = (e) => {
+    processFiles(e.target.files);
   };
 
-  const addFiles = (newFiles) => {
-    const combined = [...files, ...newFiles].slice(0, maxFiles);
-    setFiles(combined.map(file => ({ file, preview: URL.createObjectURL(file) })));
+  const removePreview = (index) => {
+    setPreviews(prev => {
+      const updated = [...prev];
+      URL.revokeObjectURL(updated[index].url);
+      updated.splice(index, 1);
+      return updated;
+    });
   };
 
-  const removeFile = (i) => {
-    const newFiles = [...files];
-    URL.revokeObjectURL(newFiles[i].preview);
-    newFiles.splice(i, 1);
-    setFiles(newFiles);
+  const handleUpload = () => {
+    if (previews.length === 0 || !guestName.trim()) return;
+    
+    const files = previews.map(p => p.file);
+    onUpload(files, guestName.trim());
+    
+    // Clear previews
+    previews.forEach(p => URL.revokeObjectURL(p.url));
+    setPreviews([]);
+    setGuestName('');
+    setUploadSuccess(true);
+    
+    setTimeout(() => setUploadSuccess(false), 5000);
   };
-
-  const handleSubmit = () => {
-    if (files.length === 0 || !guestName.trim()) return;
-    onUpload(files.map(f => f.file), guestName);
-    setSubmitted(true);
-  };
-
-  if (submitted) {
-    return (
-      <Section ref={sectionRef} id="photos">
-        <Container>
-          <SuccessMessage>
-            <div className="icon">🌿</div>
-            <h3>Danke, {guestName}!</h3>
-            <p>{files.length} Foto{files.length !== 1 ? 's' : ''} erfolgreich hochgeladen.</p>
-          </SuccessMessage>
-        </Container>
-      </Section>
-    );
-  }
 
   return (
     <Section ref={sectionRef} id="photos">
+      {/* Floating decorations */}
+      <FloatingElement 
+        style={{ top: '15%', left: '5%', width: '80px', height: '80px' }}
+        duration={10}
+      >
+        <svg viewBox="0 0 100 100">
+          <path d="M50 5 C20 25 10 60 50 95 C90 60 80 25 50 5 Z" />
+        </svg>
+      </FloatingElement>
+      <FloatingElement 
+        style={{ bottom: '20%', right: '8%', width: '60px', height: '60px' }}
+        duration={12}
+        delay={2}
+      >
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="15" />
+          <ellipse cx="50" cy="20" rx="12" ry="20" />
+          <ellipse cx="50" cy="80" rx="12" ry="20" />
+          <ellipse cx="20" cy="50" rx="20" ry="12" />
+          <ellipse cx="80" cy="50" rx="20" ry="12" />
+        </svg>
+      </FloatingElement>
+
       <Container>
         <Header visible={visible}>
-          <Eyebrow>Teilt eure Momente</Eyebrow>
-          <Title>Foto-Upload</Title>
-          <Subtitle>Ladet eure schönsten Erinnerungen der Feier hoch!</Subtitle>
+          <Eyebrow>Foto-Upload</Eyebrow>
+          <Title>Teilt eure Momente</Title>
+          <Subtitle>
+            Ladet eure Fotos von unserer Feier hoch – gemeinsam schaffen wir 
+            wundervolle Erinnerungen.
+          </Subtitle>
         </Header>
-        
-        <UploadArea visible={visible}>
-          <DropZone isDragging={isDragging} onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} onDrop={handleDrop} onClick={() => fileInputRef.current?.click()}>
-            <DropIcon>📷</DropIcon>
-            <DropText>Fotos hierher ziehen</DropText>
-            <DropSubtext>oder klicken (max. {maxFiles})</DropSubtext>
-          </DropZone>
-          
-          <HiddenInput ref={fileInputRef} type="file" multiple accept={acceptedTypes.join(',')} onChange={(e) => addFiles(Array.from(e.target.files))} />
-          
-          {files.length > 0 && (
-            <>
-              <PreviewGrid>
-                {files.map((item, i) => (
-                  <PreviewItem key={i}>
-                    <img src={item.preview} alt="" />
-                    <RemoveBtn onClick={() => removeFile(i)}>✕</RemoveBtn>
-                  </PreviewItem>
-                ))}
-              </PreviewGrid>
-              <SubmitSection>
-                <GuestName type="text" placeholder="Euer Name" value={guestName} onChange={(e) => setGuestName(e.target.value)} />
-                <SubmitBtn onClick={handleSubmit} disabled={!guestName.trim()}>{files.length} Foto{files.length !== 1 ? 's' : ''} hochladen</SubmitBtn>
-              </SubmitSection>
-            </>
-          )}
-        </UploadArea>
-        
+
         <Stats visible={visible}>
-          <StatItem><div className="number">{totalPhotos}</div><div className="label">Fotos</div></StatItem>
-          <StatItem><div className="number">{totalGuests}</div><div className="label">Gäste</div></StatItem>
+          <StatItem>
+            <div className="number">{totalPhotos}</div>
+            <div className="label">Fotos</div>
+          </StatItem>
+          <StatItem>
+            <div className="number">{totalGuests}</div>
+            <div className="label">Gäste</div>
+          </StatItem>
         </Stats>
+
+        <UploadZone
+          visible={visible}
+          isDragging={isDragging}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <UploadIcon>📷</UploadIcon>
+          <UploadTitle>Fotos hier ablegen</UploadTitle>
+          <UploadText>oder klicken zum Auswählen</UploadText>
+          
+          <UploadButton onClick={(e) => e.stopPropagation()}>
+            🌿 Dateien auswählen
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept={acceptedTypes.join(',')}
+              onChange={handleFileChange}
+            />
+          </UploadButton>
+          
+          <FileTypes>JPG, PNG oder WebP · Max. {maxFiles} Dateien</FileTypes>
+
+          {previews.length > 0 && (
+            <NameInput onClick={(e) => e.stopPropagation()}>
+              <label>Euer Name</label>
+              <input
+                type="text"
+                placeholder="z.B. Lisa & Martin"
+                value={guestName}
+                onChange={(e) => setGuestName(e.target.value)}
+              />
+            </NameInput>
+          )}
+        </UploadZone>
+
+        {previews.length > 0 && (
+          <>
+            <PreviewGrid>
+              {previews.map((preview, i) => (
+                <PreviewItem key={i} className={preview.uploading ? 'uploading' : ''}>
+                  <img src={preview.url} alt={`Preview ${i + 1}`} />
+                  <RemoveButton onClick={() => removePreview(i)}>×</RemoveButton>
+                </PreviewItem>
+              ))}
+            </PreviewGrid>
+            
+            <UploadButton
+              as="button"
+              style={{ 
+                display: 'flex', 
+                margin: '2rem auto 0',
+                opacity: guestName.trim() ? 1 : 0.5,
+                pointerEvents: guestName.trim() ? 'auto' : 'none'
+              }}
+              onClick={handleUpload}
+            >
+              🌸 {previews.length} {previews.length === 1 ? 'Foto' : 'Fotos'} hochladen
+            </UploadButton>
+          </>
+        )}
+
+        {uploadSuccess && (
+          <SuccessMessage>
+            <div className="icon">🌷</div>
+            <p>Vielen Dank! Eure Fotos wurden erfolgreich hochgeladen.</p>
+          </SuccessMessage>
+        )}
       </Container>
     </Section>
   );

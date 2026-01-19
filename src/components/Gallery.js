@@ -1,5 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ANIMATIONS
+// ═══════════════════════════════════════════════════════════════════════════
+
+const fadeInUp = keyframes`
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
+const scaleIn = keyframes`
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+`;
+
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STYLED COMPONENTS
+// ═══════════════════════════════════════════════════════════════════════════
 
 const Section = styled.section`
   padding: 8rem 2rem;
@@ -22,6 +45,7 @@ const Header = styled.div`
 const Eyebrow = styled.div`
   font-family: 'Lato', sans-serif;
   font-size: 0.7rem;
+  font-weight: 500;
   letter-spacing: 0.4em;
   text-transform: uppercase;
   color: var(--sage-dark);
@@ -31,6 +55,7 @@ const Eyebrow = styled.div`
 const Title = styled.h2`
   font-family: 'Playfair Display', serif;
   font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 400;
   color: var(--forest);
 `;
 
@@ -46,7 +71,10 @@ const GalleryGrid = styled.div`
 const GalleryItem = styled.div`
   position: relative;
   cursor: pointer;
-  border-radius: ${p => p.index % 3 === 0 ? '50% 50% 20px 20px' : p.index % 3 === 1 ? '20px' : '20px 20px 50% 50%'};
+  border-radius: ${p => {
+    const shapes = ['50% 50% 20px 20px', '20px', '20px 20px 50% 50%', '30px'];
+    return shapes[p.index % shapes.length];
+  }};
   overflow: hidden;
   aspect-ratio: ${p => p.index % 4 === 0 ? '1/1.2' : '1/1'};
   background: var(--cream-dark);
@@ -57,7 +85,7 @@ const GalleryItem = styled.div`
   
   &:hover {
     transform: scale(1.03);
-    box-shadow: 0 15px 40px rgba(45,59,45,0.15);
+    box-shadow: var(--shadow-lg);
     
     img { transform: scale(1.1); }
     .overlay { opacity: 1; }
@@ -75,15 +103,22 @@ const Placeholder = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, var(--cream-dark), var(--cream));
+  gap: 0.5rem;
   
-  span {
+  .number {
     font-family: 'Playfair Display', serif;
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-style: italic;
     color: var(--sage-light);
+  }
+  
+  .icon {
+    font-size: 1.5rem;
+    opacity: 0.5;
   }
 `;
 
@@ -107,6 +142,12 @@ const Overlay = styled.div`
     justify-content: center;
     font-size: 1.5rem;
     color: var(--forest);
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+  }
+  
+  ${GalleryItem}:hover & span {
+    transform: scale(1);
   }
 `;
 
@@ -128,10 +169,42 @@ const Lightbox = styled.div`
 const LightboxImage = styled.div`
   max-width: 90vw;
   max-height: 85vh;
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
+  animation: ${p => p.isOpen ? scaleIn : 'none'} 0.3s ease;
   
-  img { max-width: 100%; max-height: 85vh; object-fit: contain; }
+  img { 
+    max-width: 100%; 
+    max-height: 85vh; 
+    object-fit: contain;
+    display: block;
+  }
+`;
+
+const LightboxPlaceholder = styled.div`
+  width: 70vw;
+  height: 60vh;
+  max-width: 800px;
+  background: var(--cream-dark);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  
+  .number {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    font-style: italic;
+    color: var(--sage-light);
+  }
+  
+  .text {
+    font-family: 'Lato', sans-serif;
+    font-size: 1rem;
+    color: var(--text-light);
+  }
 `;
 
 const LightboxClose = styled.button`
@@ -147,8 +220,15 @@ const LightboxClose = styled.button`
   font-size: 1.2rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
-  &:hover { background: var(--sage); color: var(--cream); }
+  &:hover { 
+    background: var(--sage); 
+    color: var(--cream);
+    transform: rotate(90deg);
+  }
 `;
 
 const LightboxNav = styled.button`
@@ -163,23 +243,40 @@ const LightboxNav = styled.button`
   color: var(--forest);
   font-size: 1.2rem;
   cursor: pointer;
-  ${p => p.direction === 'prev' ? 'left: 2rem;' : 'right: 2rem;'}
-  
-  &:hover { background: var(--sage); color: var(--cream); }
-`;
-
-const LightboxPlaceholder = styled.div`
-  width: 70vw;
-  height: 60vh;
-  max-width: 800px;
-  background: var(--cream-dark);
-  border-radius: 20px;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  ${p => p.direction === 'prev' ? 'left: 2rem;' : 'right: 2rem;'}
   
-  span { font-family: 'Playfair Display', serif; font-size: 3rem; font-style: italic; color: var(--sage-light); }
+  &:hover { 
+    background: var(--sage); 
+    color: var(--cream);
+  }
+  
+  @media (max-width: 768px) {
+    ${p => p.direction === 'prev' ? 'left: 1rem;' : 'right: 1rem;'}
+    width: 40px;
+    height: 40px;
+  }
 `;
+
+const LightboxCounter = styled.div`
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Lato', sans-serif;
+  font-size: 0.9rem;
+  color: var(--cream);
+  background: rgba(0,0,0,0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+`;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════
 
 function Gallery({
   images = [
@@ -197,22 +294,35 @@ function Gallery({
   const sectionRef = useRef(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) setVisible(true); }, { threshold: 0.1 });
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      { threshold: 0.1 }
+    );
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
     document.body.style.overflow = lightboxOpen ? 'hidden' : 'unset';
+    
     const handleKey = (e) => {
       if (!lightboxOpen) return;
       if (e.key === 'Escape') setLightboxOpen(false);
       if (e.key === 'ArrowLeft' && currentIndex > 0) setCurrentIndex(currentIndex - 1);
       if (e.key === 'ArrowRight' && currentIndex < images.length - 1) setCurrentIndex(currentIndex + 1);
     };
+    
     window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
+    return () => {
+      window.removeEventListener('keydown', handleKey);
+      document.body.style.overflow = 'unset';
+    };
   }, [lightboxOpen, currentIndex, images.length]);
+
+  const openLightbox = (index) => {
+    setCurrentIndex(index);
+    setLightboxOpen(true);
+  };
 
   return (
     <Section ref={sectionRef} id="gallery">
@@ -224,9 +334,23 @@ function Gallery({
         
         <GalleryGrid>
           {images.map((img, i) => (
-            <GalleryItem key={i} index={i} visible={visible} onClick={() => { setCurrentIndex(i); setLightboxOpen(true); }}>
-              {img.src ? <img src={img.src} alt={img.alt} /> : <Placeholder><span>{i + 1}</span></Placeholder>}
-              <Overlay className="overlay"><span>+</span></Overlay>
+            <GalleryItem 
+              key={i} 
+              index={i} 
+              visible={visible} 
+              onClick={() => openLightbox(i)}
+            >
+              {img.src ? (
+                <img src={img.src} alt={img.alt} />
+              ) : (
+                <Placeholder>
+                  <span className="icon">🌸</span>
+                  <span className="number">{i + 1}</span>
+                </Placeholder>
+              )}
+              <Overlay className="overlay">
+                <span>+</span>
+              </Overlay>
             </GalleryItem>
           ))}
         </GalleryGrid>
@@ -234,11 +358,37 @@ function Gallery({
       
       <Lightbox isOpen={lightboxOpen} onClick={() => setLightboxOpen(false)}>
         <LightboxClose onClick={() => setLightboxOpen(false)}>✕</LightboxClose>
-        {currentIndex > 0 && <LightboxNav direction="prev" onClick={(e) => { e.stopPropagation(); setCurrentIndex(currentIndex - 1); }}>←</LightboxNav>}
-        <LightboxImage onClick={(e) => e.stopPropagation()}>
-          {images[currentIndex]?.src ? <img src={images[currentIndex].src} alt="" /> : <LightboxPlaceholder><span>Foto {currentIndex + 1}</span></LightboxPlaceholder>}
+        
+        {currentIndex > 0 && (
+          <LightboxNav 
+            direction="prev" 
+            onClick={(e) => { e.stopPropagation(); setCurrentIndex(currentIndex - 1); }}
+          >
+            ←
+          </LightboxNav>
+        )}
+        
+        <LightboxImage isOpen={lightboxOpen} onClick={(e) => e.stopPropagation()}>
+          {images[currentIndex]?.src ? (
+            <img src={images[currentIndex].src} alt="" />
+          ) : (
+            <LightboxPlaceholder>
+              <span className="number">{currentIndex + 1}</span>
+              <span className="text">Foto Platzhalter</span>
+            </LightboxPlaceholder>
+          )}
         </LightboxImage>
-        {currentIndex < images.length - 1 && <LightboxNav direction="next" onClick={(e) => { e.stopPropagation(); setCurrentIndex(currentIndex + 1); }}>→</LightboxNav>}
+        
+        {currentIndex < images.length - 1 && (
+          <LightboxNav 
+            direction="next" 
+            onClick={(e) => { e.stopPropagation(); setCurrentIndex(currentIndex + 1); }}
+          >
+            →
+          </LightboxNav>
+        )}
+        
+        <LightboxCounter>{currentIndex + 1} / {images.length}</LightboxCounter>
       </Lightbox>
     </Section>
   );
