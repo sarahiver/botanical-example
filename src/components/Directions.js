@@ -26,14 +26,14 @@ const Section = styled.section`
 
 const FloatingElement = styled.div`
   position: absolute;
-  font-size: ${p => p.size || '2rem'};
+  font-size: ${p => p.$size || '2rem'};
   opacity: 0.12;
-  animation: ${float} ${p => p.duration || '6s'} ease-in-out infinite;
-  animation-delay: ${p => p.delay || '0s'};
-  top: ${p => p.top};
-  left: ${p => p.left};
-  right: ${p => p.right};
-  bottom: ${p => p.bottom};
+  animation: ${float} ${p => p.$duration || '6s'} ease-in-out infinite;
+  animation-delay: ${p => p.$delay || '0s'};
+  top: ${p => p.$top};
+  left: ${p => p.$left};
+  right: ${p => p.$right};
+  bottom: ${p => p.$bottom};
 `;
 
 const Container = styled.div`
@@ -46,8 +46,8 @@ const Container = styled.div`
 const Header = styled.div`
   text-align: center;
   margin-bottom: 4rem;
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '30px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
   transition: all 0.8s ease;
 `;
 
@@ -105,8 +105,8 @@ const MapContainer = styled.div`
   overflow: hidden;
   border: 1px solid rgba(139, 157, 131, 0.2);
   box-shadow: 0 25px 70px rgba(139, 157, 131, 0.15);
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '40px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '40px'});
   transition: all 0.8s ease;
   transition-delay: 0.2s;
 `;
@@ -174,8 +174,8 @@ const DirectionsCards = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '40px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '40px'});
   transition: all 0.8s ease;
   transition-delay: 0.3s;
 `;
@@ -243,8 +243,8 @@ const DirectionHighlight = styled.span`
 
 const ParkingSection = styled.div`
   margin-top: 3rem;
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '30px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
   transition: all 0.8s ease;
   transition-delay: 0.5s;
 `;
@@ -328,13 +328,13 @@ const Directions = () => {
 
   return (
     <Section ref={sectionRef} id="directions">
-      <FloatingElement top="8%" left="5%" size="2.5rem" duration="7s">🗺️</FloatingElement>
-      <FloatingElement top="25%" right="8%" size="2rem" duration="5s" delay="1s">🌿</FloatingElement>
-      <FloatingElement top="55%" left="3%" size="2rem" duration="8s" delay="2s">📍</FloatingElement>
-      <FloatingElement bottom="20%" right="5%" size="2.5rem" duration="6s" delay="0.5s">🚗</FloatingElement>
+      <FloatingElement $top="8%" $left="5%" $size="2.5rem" $duration="7s">🗺️</FloatingElement>
+      <FloatingElement $top="25%" $right="8%" $size="2rem" $duration="5s" $delay="1s">🌿</FloatingElement>
+      <FloatingElement $top="55%" $left="3%" $size="2rem" $duration="8s" $delay="2s">📍</FloatingElement>
+      <FloatingElement $bottom="20%" $right="5%" $size="2.5rem" $duration="6s" $delay="0.5s">🚗</FloatingElement>
 
       <Container>
-        <Header visible={isVisible}>
+        <Header $visible={isVisible}>
           <MapIcon>📍</MapIcon>
           <Eyebrow>So findet ihr uns</Eyebrow>
           <Title>An<span>fahrt</span></Title>
@@ -345,7 +345,7 @@ const Directions = () => {
         </Header>
 
         <ContentGrid>
-          <MapContainer visible={isVisible}>
+          <MapContainer $visible={isVisible}>
             <MapPlaceholder>
               <MapNote>Karte lädt...</MapNote>
             </MapPlaceholder>
@@ -362,7 +362,7 @@ const Directions = () => {
             </MapInfo>
           </MapContainer>
 
-          <DirectionsCards visible={isVisible}>
+          <DirectionsCards $visible={isVisible}>
             {directions.map((dir, index) => (
               <DirectionCard key={index}>
                 <DirectionIcon>{dir.icon}</DirectionIcon>
@@ -375,7 +375,7 @@ const Directions = () => {
           </DirectionsCards>
         </ContentGrid>
 
-        <ParkingSection visible={isVisible}>
+        <ParkingSection $visible={isVisible}>
           <ParkingCard>
             <ParkingIcon>🅿️</ParkingIcon>
             <ParkingContent>

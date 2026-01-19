@@ -37,13 +37,13 @@ const Section = styled.section`
 
 const FloatingLeaf = styled.div`
   position: absolute;
-  font-size: ${p => p.size || '2rem'};
+  font-size: ${p => p.$size || '2rem'};
   opacity: 0.15;
-  animation: ${float} ${p => p.duration || '6s'} ease-in-out infinite;
-  animation-delay: ${p => p.delay || '0s'};
-  top: ${p => p.top};
-  left: ${p => p.left};
-  right: ${p => p.right};
+  animation: ${float} ${p => p.$duration || '6s'} ease-in-out infinite;
+  animation-delay: ${p => p.$delay || '0s'};
+  top: ${p => p.$top};
+  left: ${p => p.$left};
+  right: ${p => p.$right};
 `;
 
 const Container = styled.div`
@@ -56,8 +56,8 @@ const Container = styled.div`
 const Header = styled.div`
   text-align: center;
   margin-bottom: 4rem;
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '30px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
   transition: all 0.8s ease;
 `;
 
@@ -106,8 +106,8 @@ const FormCard = styled.div`
   padding: 3rem;
   border: 1px solid rgba(139, 157, 131, 0.2);
   box-shadow: 0 20px 60px rgba(139, 157, 131, 0.15);
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '40px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '40px'});
   transition: all 0.8s ease;
   transition-delay: 0.2s;
 `;
@@ -218,8 +218,8 @@ const SuccessText = styled.p`
 
 const WishList = styled.div`
   margin-top: 4rem;
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '30px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
   transition: all 0.8s ease;
   transition-delay: 0.4s;
 `;
@@ -326,13 +326,13 @@ const MusicWishes = () => {
 
   return (
     <Section ref={sectionRef} id="music">
-      <FloatingLeaf top="10%" left="5%" size="3rem" duration="7s">🎵</FloatingLeaf>
-      <FloatingLeaf top="20%" right="10%" size="2rem" duration="5s" delay="1s">🎶</FloatingLeaf>
-      <FloatingLeaf top="60%" left="8%" size="2.5rem" duration="8s" delay="2s">🎼</FloatingLeaf>
-      <FloatingLeaf top="70%" right="5%" size="2rem" duration="6s" delay="0.5s">🌿</FloatingLeaf>
+      <FloatingLeaf $top="10%" $left="5%" $size="3rem" $duration="7s">🎵</FloatingLeaf>
+      <FloatingLeaf $top="20%" $right="10%" $size="2rem" $duration="5s" $delay="1s">🎶</FloatingLeaf>
+      <FloatingLeaf $top="60%" $left="8%" $size="2.5rem" $duration="8s" $delay="2s">🎼</FloatingLeaf>
+      <FloatingLeaf $top="70%" $right="5%" $size="2rem" $duration="6s" $delay="0.5s">🌿</FloatingLeaf>
 
       <Container>
-        <Header visible={isVisible}>
+        <Header $visible={isVisible}>
           <MusicIcon>🎵</MusicIcon>
           <Eyebrow>Eure Wünsche</Eyebrow>
           <Title>Musik<span>wünsche</span></Title>
@@ -342,7 +342,7 @@ const MusicWishes = () => {
           </Subtitle>
         </Header>
 
-        <FormCard visible={isVisible}>
+        <FormCard $visible={isVisible}>
           {!submitted ? (
             <Form onSubmit={handleSubmit}>
               <InputGroup>
@@ -400,7 +400,7 @@ const MusicWishes = () => {
         </FormCard>
 
         {wishes.length > 0 && (
-          <WishList visible={isVisible}>
+          <WishList $visible={isVisible}>
             <WishListTitle>🎶 Aktuelle Wunschliste</WishListTitle>
             {wishes.map((wish, index) => (
               <WishItem key={index}>

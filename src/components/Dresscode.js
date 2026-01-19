@@ -11,11 +11,6 @@ const float = keyframes`
   50% { transform: translateY(-15px) rotate(5deg); }
 `;
 
-const shimmer = keyframes`
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-`;
-
 const Section = styled.section`
   min-height: 100vh;
   background: linear-gradient(180deg, var(--sage-lightest) 0%, var(--cream) 100%);
@@ -26,14 +21,14 @@ const Section = styled.section`
 
 const FloatingElement = styled.div`
   position: absolute;
-  font-size: ${p => p.size || '2rem'};
+  font-size: ${p => p.$size || '2rem'};
   opacity: 0.12;
-  animation: ${float} ${p => p.duration || '6s'} ease-in-out infinite;
-  animation-delay: ${p => p.delay || '0s'};
-  top: ${p => p.top};
-  left: ${p => p.left};
-  right: ${p => p.right};
-  bottom: ${p => p.bottom};
+  animation: ${float} ${p => p.$duration || '6s'} ease-in-out infinite;
+  animation-delay: ${p => p.$delay || '0s'};
+  top: ${p => p.$top};
+  left: ${p => p.$left};
+  right: ${p => p.$right};
+  bottom: ${p => p.$bottom};
 `;
 
 const Container = styled.div`
@@ -46,8 +41,8 @@ const Container = styled.div`
 const Header = styled.div`
   text-align: center;
   margin-bottom: 4rem;
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '30px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
   transition: all 0.8s ease;
 `;
 
@@ -97,8 +92,8 @@ const MainCard = styled.div`
   box-shadow: 0 30px 80px rgba(139, 157, 131, 0.15);
   margin-bottom: 3rem;
   text-align: center;
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '40px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '40px'});
   transition: all 0.8s ease;
   transition-delay: 0.2s;
   position: relative;
@@ -157,33 +152,16 @@ const ColorSwatch = styled.div`
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: ${p => p.color};
+  background: ${p => p.$color};
   border: 3px solid white;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   position: relative;
+  cursor: pointer;
   
   &:hover {
     transform: scale(1.15);
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
-  }
-  
-  &::after {
-    content: '${p => p.name}';
-    position: absolute;
-    bottom: -30px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: 'Lato', sans-serif;
-    font-size: 0.7rem;
-    color: var(--text-light);
-    white-space: nowrap;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  
-  &:hover::after {
-    opacity: 1;
   }
 `;
 
@@ -204,10 +182,10 @@ const GenderCard = styled.div`
   border-radius: 30px;
   padding: 2.5rem;
   border: 1px solid rgba(139, 157, 131, 0.15);
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '30px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
   transition: all 0.8s ease;
-  transition-delay: ${p => p.delay || '0.3s'};
+  transition-delay: ${p => p.$delay || '0.3s'};
   
   &:hover {
     background: rgba(255, 255, 255, 0.9);
@@ -256,8 +234,8 @@ const SuggestionItem = styled.li`
 
 const TipsSection = styled.div`
   margin-top: 3rem;
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '30px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
   transition: all 0.8s ease;
   transition-delay: 0.5s;
 `;
@@ -346,13 +324,13 @@ const Dresscode = () => {
 
   return (
     <Section ref={sectionRef} id="dresscode">
-      <FloatingElement top="10%" left="5%" size="2.5rem" duration="7s">👗</FloatingElement>
-      <FloatingElement top="20%" right="8%" size="2rem" duration="5s" delay="1s">🌿</FloatingElement>
-      <FloatingElement top="60%" left="3%" size="2rem" duration="8s" delay="2s">🤵</FloatingElement>
-      <FloatingElement bottom="15%" right="5%" size="2.5rem" duration="6s" delay="0.5s">✨</FloatingElement>
+      <FloatingElement $top="10%" $left="5%" $size="2.5rem" $duration="7s">👗</FloatingElement>
+      <FloatingElement $top="20%" $right="8%" $size="2rem" $duration="5s" $delay="1s">🌿</FloatingElement>
+      <FloatingElement $top="60%" $left="3%" $size="2rem" $duration="8s" $delay="2s">🤵</FloatingElement>
+      <FloatingElement $bottom="15%" $right="5%" $size="2.5rem" $duration="6s" $delay="0.5s">✨</FloatingElement>
 
       <Container>
-        <Header visible={isVisible}>
+        <Header $visible={isVisible}>
           <DressIcon>👔</DressIcon>
           <Eyebrow>Was ziehe ich an?</Eyebrow>
           <Title>Dress<span>code</span></Title>
@@ -362,7 +340,7 @@ const Dresscode = () => {
           </Subtitle>
         </Header>
 
-        <MainCard visible={isVisible}>
+        <MainCard $visible={isVisible}>
           <DresscodeTitle>Garden Party Elegance</DresscodeTitle>
           <DresscodeLabel>Semi-Formal / Festlich</DresscodeLabel>
           <DresscodeDescription>
@@ -374,13 +352,13 @@ const Dresscode = () => {
           
           <ColorPalette>
             {colors.map((c, i) => (
-              <ColorSwatch key={i} color={c.color} name={c.name} />
+              <ColorSwatch key={i} $color={c.color} title={c.name} />
             ))}
           </ColorPalette>
         </MainCard>
 
         <GenderGrid>
-          <GenderCard visible={isVisible} delay="0.3s">
+          <GenderCard $visible={isVisible} $delay="0.3s">
             <GenderIcon>👗</GenderIcon>
             <GenderTitle>Für die Damen</GenderTitle>
             <SuggestionList>
@@ -392,7 +370,7 @@ const Dresscode = () => {
             </SuggestionList>
           </GenderCard>
 
-          <GenderCard visible={isVisible} delay="0.4s">
+          <GenderCard $visible={isVisible} $delay="0.4s">
             <GenderIcon>🤵</GenderIcon>
             <GenderTitle>Für die Herren</GenderTitle>
             <SuggestionList>
@@ -405,7 +383,7 @@ const Dresscode = () => {
           </GenderCard>
         </GenderGrid>
 
-        <TipsSection visible={isVisible}>
+        <TipsSection $visible={isVisible}>
           <TipsTitle>💡 Gut zu wissen</TipsTitle>
           <TipsGrid>
             <TipCard>

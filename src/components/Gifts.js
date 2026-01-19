@@ -11,11 +11,6 @@ const float = keyframes`
   50% { transform: translateY(-15px) rotate(3deg); }
 `;
 
-const sparkle = keyframes`
-  0%, 100% { opacity: 0; transform: scale(0); }
-  50% { opacity: 1; transform: scale(1); }
-`;
-
 const fadeInUp = keyframes`
   from {
     opacity: 0;
@@ -37,14 +32,14 @@ const Section = styled.section`
 
 const FloatingElement = styled.div`
   position: absolute;
-  font-size: ${p => p.size || '2rem'};
+  font-size: ${p => p.$size || '2rem'};
   opacity: 0.12;
-  animation: ${float} ${p => p.duration || '6s'} ease-in-out infinite;
-  animation-delay: ${p => p.delay || '0s'};
-  top: ${p => p.top};
-  left: ${p => p.left};
-  right: ${p => p.right};
-  bottom: ${p => p.bottom};
+  animation: ${float} ${p => p.$duration || '6s'} ease-in-out infinite;
+  animation-delay: ${p => p.$delay || '0s'};
+  top: ${p => p.$top};
+  left: ${p => p.$left};
+  right: ${p => p.$right};
+  bottom: ${p => p.$bottom};
 `;
 
 const Container = styled.div`
@@ -57,8 +52,8 @@ const Container = styled.div`
 const Header = styled.div`
   text-align: center;
   margin-bottom: 4rem;
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '30px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
   transition: all 0.8s ease;
 `;
 
@@ -105,8 +100,8 @@ const FilterTabs = styled.div`
   gap: 0.75rem;
   margin-bottom: 3rem;
   flex-wrap: wrap;
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '20px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '20px'});
   transition: all 0.8s ease;
   transition-delay: 0.1s;
 `;
@@ -116,16 +111,16 @@ const FilterTab = styled.button`
   font-size: 0.85rem;
   font-weight: 500;
   padding: 0.75rem 1.5rem;
-  border: 2px solid ${p => p.active ? 'var(--sage)' : 'rgba(139, 157, 131, 0.3)'};
+  border: 2px solid ${p => p.$active ? 'var(--sage)' : 'rgba(139, 157, 131, 0.3)'};
   border-radius: 50px;
-  background: ${p => p.active ? 'var(--sage)' : 'transparent'};
-  color: ${p => p.active ? 'white' : 'var(--sage-dark)'};
+  background: ${p => p.$active ? 'var(--sage)' : 'transparent'};
+  color: ${p => p.$active ? 'white' : 'var(--sage-dark)'};
   cursor: pointer;
   transition: all 0.3s ease;
   
   &:hover {
     border-color: var(--sage);
-    background: ${p => p.active ? 'var(--sage-dark)' : 'rgba(139, 157, 131, 0.1)'};
+    background: ${p => p.$active ? 'var(--sage-dark)' : 'rgba(139, 157, 131, 0.1)'};
   }
 `;
 
@@ -142,10 +137,10 @@ const GiftCard = styled.div`
   overflow: hidden;
   border: 1px solid rgba(139, 157, 131, 0.2);
   box-shadow: 0 15px 50px rgba(139, 157, 131, 0.1);
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '40px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '40px'});
   transition: all 0.6s ease;
-  transition-delay: ${p => p.delay || '0.2s'};
+  transition-delay: ${p => p.$delay || '0.2s'};
   position: relative;
   
   &:hover {
@@ -153,7 +148,7 @@ const GiftCard = styled.div`
     box-shadow: 0 25px 70px rgba(139, 157, 131, 0.18);
   }
   
-  ${p => p.reserved && `
+  ${p => p.$reserved && `
     &::after {
       content: '';
       position: absolute;
@@ -248,7 +243,7 @@ const ReserveButton = styled.button`
   cursor: ${p => p.disabled ? 'not-allowed' : 'pointer'};
   transition: all 0.3s ease;
   
-  background: ${p => p.reserved ? 'var(--text-muted)' : 'var(--sage)'};
+  background: ${p => p.$reserved ? 'var(--text-muted)' : 'var(--sage)'};
   color: white;
   
   &:hover:not(:disabled) {
@@ -350,7 +345,7 @@ const ModalButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
   
-  ${p => p.primary ? `
+  ${p => p.$primary ? `
     background: var(--sage);
     color: white;
     border: none;
@@ -377,8 +372,8 @@ const SuccessModal = styled(ModalContent)`
 const InfoSection = styled.div`
   margin-top: 4rem;
   text-align: center;
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '30px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
   transition: all 0.8s ease;
   transition-delay: 0.6s;
 `;
@@ -581,13 +576,13 @@ const Gifts = () => {
 
   return (
     <Section ref={sectionRef} id="gifts">
-      <FloatingElement top="5%" left="5%" size="2.5rem" duration="7s">🎁</FloatingElement>
-      <FloatingElement top="20%" right="8%" size="2rem" duration="5s" delay="1s">🌿</FloatingElement>
-      <FloatingElement top="50%" left="3%" size="2rem" duration="8s" delay="2s">✨</FloatingElement>
-      <FloatingElement bottom="15%" right="5%" size="2.5rem" duration="6s" delay="0.5s">💚</FloatingElement>
+      <FloatingElement $top="5%" $left="5%" $size="2.5rem" $duration="7s">🎁</FloatingElement>
+      <FloatingElement $top="20%" $right="8%" $size="2rem" $duration="5s" $delay="1s">🌿</FloatingElement>
+      <FloatingElement $top="50%" $left="3%" $size="2rem" $duration="8s" $delay="2s">✨</FloatingElement>
+      <FloatingElement $bottom="15%" $right="5%" $size="2.5rem" $duration="6s" $delay="0.5s">💚</FloatingElement>
 
       <Container>
-        <Header visible={isVisible}>
+        <Header $visible={isVisible}>
           <GiftIcon>🎁</GiftIcon>
           <Eyebrow>Eure Großzügigkeit</Eyebrow>
           <Title>Geschenke<span>liste</span></Title>
@@ -597,11 +592,11 @@ const Gifts = () => {
           </Subtitle>
         </Header>
 
-        <FilterTabs visible={isVisible}>
+        <FilterTabs $visible={isVisible}>
           {categories.map(cat => (
             <FilterTab 
               key={cat}
-              active={activeFilter === cat}
+              $active={activeFilter === cat}
               onClick={() => setActiveFilter(cat)}
             >
               {cat === 'all' ? 'Alle' : cat}
@@ -613,9 +608,9 @@ const Gifts = () => {
           {filteredGifts.map((gift, index) => (
             <GiftCard 
               key={gift.id} 
-              visible={isVisible} 
-              delay={`${0.2 + index * 0.05}s`}
-              reserved={gift.reserved}
+              $visible={isVisible} 
+              $delay={`${0.2 + index * 0.05}s`}
+              $reserved={gift.reserved}
             >
               <GiftImageContainer>
                 {gift.icon}
@@ -627,7 +622,7 @@ const Gifts = () => {
                 <GiftName>{gift.name}</GiftName>
                 <GiftDescription>{gift.description}</GiftDescription>
                 <ReserveButton 
-                  reserved={gift.reserved}
+                  $reserved={gift.reserved}
                   disabled={gift.reserved}
                   onClick={() => !gift.reserved && setSelectedGift(gift)}
                 >
@@ -641,7 +636,7 @@ const Gifts = () => {
           ))}
         </GiftGrid>
 
-        <InfoSection visible={isVisible}>
+        <InfoSection $visible={isVisible}>
           <InfoCard>
             <InfoTitle>💝 Hinweis</InfoTitle>
             <InfoText>
@@ -674,7 +669,7 @@ const Gifts = () => {
               <ModalButton onClick={() => setSelectedGift(null)}>
                 Abbrechen
               </ModalButton>
-              <ModalButton primary onClick={handleReserve}>
+              <ModalButton $primary onClick={handleReserve}>
                 Reservieren
               </ModalButton>
             </ModalButtons>

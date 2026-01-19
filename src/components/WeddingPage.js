@@ -1,26 +1,26 @@
-import { useEffect } from "react"
-import styled from "styled-components"
+import React, { useEffect } from 'react';
+import styled from 'styled-components';
 
 // Import all components
-import Accommodations from "./Accommodations"
-import Contact from "./Contact"
-import Countdown from "./Countdown"
-import Directions from "./Directions"
-import Dresscode from "./Dresscode"
-import FAQ from "./FAQ"
-import Footer from "./Footer"
-import Gallery from "./Gallery"
-import Gifts from "./Gifts"
-import Guestbook from "./Guestbook"
-import Hero from "./Hero"
-import Locations from "./Locations"
-import LoveStory from "./LoveStory"
-import MusicWishes from "./MusicWishes"
-import Navigation from "./Navigation"
-import PhotoUpload from "./PhotoUpload"
-import RSVP from "./RSVP"
-import Timeline from "./Timeline"
-import WeddingABC from "./WeddingABC"
+import Navigation from './Navigation';
+import Hero from './Hero';
+import Countdown from './Countdown';
+import LoveStory from './LoveStory';
+import Timeline from './Timeline';
+import Locations from './Locations';
+import Directions from './Directions';
+import Accommodations from './Accommodations';
+import Dresscode from './Dresscode';
+import Gallery from './Gallery';
+import Gifts from './Gifts';
+import RSVP from './RSVP';
+import MusicWishes from './MusicWishes';
+import PhotoUpload from './PhotoUpload';
+import Guestbook from './Guestbook';
+import WeddingABC from './WeddingABC';
+import FAQ from './FAQ';
+import Contact from './Contact';
+import Footer from './Footer';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    WEDDING PAGE - BOTANICAL THEME
@@ -31,60 +31,60 @@ const PageWrapper = styled.div`
   min-height: 100vh;
   background: var(--cream);
   overflow-x: hidden;
-`
+`;
 
 const SmoothScrollAnchor = styled.div`
   scroll-margin-top: 80px;
-`
+`;
 
 const WeddingPage = () => {
   // Smooth scroll behavior
   useEffect(() => {
     // Enable smooth scrolling
-    document.documentElement.style.scrollBehavior = "smooth"
-
+    document.documentElement.style.scrollBehavior = 'smooth';
+    
     // Handle hash links for smooth scroll
     const handleHashChange = () => {
-      const hash = window.location.hash
+      const hash = window.location.hash;
       if (hash) {
-        const element = document.querySelector(hash)
+        const element = document.querySelector(hash);
         if (element) {
-          element.scrollIntoView({ behavior: "smooth" })
+          element.scrollIntoView({ behavior: 'smooth' });
         }
       }
-    }
+    };
 
     // Initial check for hash in URL
-    handleHashChange()
-
+    handleHashChange();
+    
     // Listen for hash changes
-    window.addEventListener("hashchange", handleHashChange)
-
+    window.addEventListener('hashchange', handleHashChange);
+    
     return () => {
-      window.removeEventListener("hashchange", handleHashChange)
-      document.documentElement.style.scrollBehavior = ""
-    }
-  }, [])
+      window.removeEventListener('hashchange', handleHashChange);
+      document.documentElement.style.scrollBehavior = '';
+    };
+  }, []);
 
   // Navigation items for the menu
   const navigationItems = [
-    { id: "home", label: "Home" },
-    { id: "story", label: "Unsere Geschichte" },
-    { id: "timeline", label: "Tagesablauf" },
-    { id: "locations", label: "Locations" },
-    { id: "directions", label: "Anfahrt" },
-    { id: "accommodations", label: "Unterkünfte" },
-    { id: "dresscode", label: "Dresscode" },
-    { id: "gallery", label: "Galerie" },
-    { id: "gifts", label: "Geschenke" },
-    { id: "rsvp", label: "RSVP" },
-    { id: "music", label: "Musikwünsche" },
-    { id: "photos", label: "Fotos hochladen" },
-    { id: "guestbook", label: "Gästebuch" },
-    { id: "abc", label: "Hochzeits-ABC" },
-    { id: "faq", label: "FAQ" },
-    { id: "contact", label: "Kontakt" },
-  ]
+    { id: 'home', label: 'Home' },
+    { id: 'story', label: 'Unsere Geschichte' },
+    { id: 'timeline', label: 'Tagesablauf' },
+    { id: 'locations', label: 'Locations' },
+    { id: 'directions', label: 'Anfahrt' },
+    { id: 'accommodations', label: 'Unterkünfte' },
+    { id: 'dresscode', label: 'Dresscode' },
+    { id: 'gallery', label: 'Galerie' },
+    { id: 'gifts', label: 'Geschenke' },
+    { id: 'rsvp', label: 'RSVP' },
+    { id: 'music', label: 'Musikwünsche' },
+    { id: 'photos', label: 'Fotos hochladen' },
+    { id: 'guestbook', label: 'Gästebuch' },
+    { id: 'abc', label: 'Hochzeits-ABC' },
+    { id: 'faq', label: 'FAQ' },
+    { id: 'contact', label: 'Kontakt' }
+  ];
 
   return (
     <PageWrapper>
@@ -92,7 +92,7 @@ const WeddingPage = () => {
       <Navigation items={navigationItems} />
 
       {/* Hero Section */}
-      <SmoothScrollAnchor id='home'>
+      <SmoothScrollAnchor id="home">
         <Hero />
       </SmoothScrollAnchor>
 
@@ -100,88 +100,84 @@ const WeddingPage = () => {
       <Countdown />
 
       {/* Love Story */}
-      <SmoothScrollAnchor id='story'>
+      <SmoothScrollAnchor id="story">
         <LoveStory />
       </SmoothScrollAnchor>
 
       {/* Timeline / Tagesablauf */}
-      <SmoothScrollAnchor id='timeline'>
+      <SmoothScrollAnchor id="timeline">
         <Timeline />
       </SmoothScrollAnchor>
 
       {/* Locations */}
-      <SmoothScrollAnchor id='locations'>
+      <SmoothScrollAnchor id="locations">
         <Locations />
       </SmoothScrollAnchor>
 
       {/* Directions / Anfahrt */}
-      <SmoothScrollAnchor id='directions'>
+      <SmoothScrollAnchor id="directions">
         <Directions />
       </SmoothScrollAnchor>
 
       {/* Accommodations / Unterkünfte */}
-      <SmoothScrollAnchor id='accommodations'>
+      <SmoothScrollAnchor id="accommodations">
         <Accommodations />
       </SmoothScrollAnchor>
 
       {/* Dresscode */}
-      <SmoothScrollAnchor id='dresscode'>
+      <SmoothScrollAnchor id="dresscode">
         <Dresscode />
       </SmoothScrollAnchor>
 
       {/* Gallery */}
-      <SmoothScrollAnchor id='gallery'>
+      <SmoothScrollAnchor id="gallery">
         <Gallery />
       </SmoothScrollAnchor>
 
       {/* Gifts / Geschenke */}
-      <SmoothScrollAnchor id='gifts'>
+      <SmoothScrollAnchor id="gifts">
         <Gifts />
       </SmoothScrollAnchor>
 
       {/* RSVP */}
-      <SmoothScrollAnchor id='rsvp'>
+      <SmoothScrollAnchor id="rsvp">
         <RSVP />
       </SmoothScrollAnchor>
 
       {/* Music Wishes */}
-      <SmoothScrollAnchor id='music'>
+      <SmoothScrollAnchor id="music">
         <MusicWishes />
       </SmoothScrollAnchor>
 
       {/* Photo Upload */}
-      <SmoothScrollAnchor id='photos'>
+      <SmoothScrollAnchor id="photos">
         <PhotoUpload />
       </SmoothScrollAnchor>
 
       {/* Guestbook */}
-      <SmoothScrollAnchor id='guestbook'>
+      <SmoothScrollAnchor id="guestbook">
         <Guestbook />
       </SmoothScrollAnchor>
 
       {/* Wedding ABC */}
-      <SmoothScrollAnchor id='abc'>
+      <SmoothScrollAnchor id="abc">
         <WeddingABC />
       </SmoothScrollAnchor>
 
-      <SmoothScrollAnchor id='dresscode'>
-        <Dresscode />
-      </SmoothScrollAnchor>
-
       {/* FAQ */}
-      <SmoothScrollAnchor id='faq'>
+      <SmoothScrollAnchor id="faq">
         <FAQ />
       </SmoothScrollAnchor>
 
       {/* Contact */}
-      <SmoothScrollAnchor id='contact'>
+      <SmoothScrollAnchor id="contact">
         <Contact />
       </SmoothScrollAnchor>
 
       {/* Footer */}
       <Footer />
     </PageWrapper>
-  )
-}
+  );
+};
 
-export default WeddingPage
+export default WeddingPage;

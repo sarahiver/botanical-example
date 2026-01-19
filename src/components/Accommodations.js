@@ -21,14 +21,14 @@ const Section = styled.section`
 
 const FloatingElement = styled.div`
   position: absolute;
-  font-size: ${p => p.size || '2rem'};
+  font-size: ${p => p.$size || '2rem'};
   opacity: 0.12;
-  animation: ${float} ${p => p.duration || '6s'} ease-in-out infinite;
-  animation-delay: ${p => p.delay || '0s'};
-  top: ${p => p.top};
-  left: ${p => p.left};
-  right: ${p => p.right};
-  bottom: ${p => p.bottom};
+  animation: ${float} ${p => p.$duration || '6s'} ease-in-out infinite;
+  animation-delay: ${p => p.$delay || '0s'};
+  top: ${p => p.$top};
+  left: ${p => p.$left};
+  right: ${p => p.$right};
+  bottom: ${p => p.$bottom};
 `;
 
 const Container = styled.div`
@@ -41,8 +41,8 @@ const Container = styled.div`
 const Header = styled.div`
   text-align: center;
   margin-bottom: 4rem;
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '30px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
   transition: all 0.8s ease;
 `;
 
@@ -97,10 +97,10 @@ const AccommodationCard = styled.div`
   overflow: hidden;
   border: 1px solid rgba(139, 157, 131, 0.2);
   box-shadow: 0 20px 60px rgba(139, 157, 131, 0.12);
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '40px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '40px'});
   transition: all 0.8s ease;
-  transition-delay: ${p => p.delay || '0.2s'};
+  transition-delay: ${p => p.$delay || '0.2s'};
   
   &:hover {
     transform: translateY(-8px);
@@ -228,8 +228,8 @@ const CardButton = styled.a`
 `;
 
 const TipSection = styled.div`
-  opacity: ${p => p.visible ? 1 : 0};
-  transform: translateY(${p => p.visible ? 0 : '30px'});
+  opacity: ${p => p.$visible ? 1 : 0};
+  transform: translateY(${p => p.$visible ? 0 : '30px'});
   transition: all 0.8s ease;
   transition-delay: 0.6s;
 `;
@@ -343,13 +343,13 @@ const Accommodations = () => {
 
   return (
     <Section ref={sectionRef} id="accommodations">
-      <FloatingElement top="8%" left="5%" size="2.5rem" duration="7s">🏨</FloatingElement>
-      <FloatingElement top="25%" right="8%" size="2rem" duration="5s" delay="1s">🌿</FloatingElement>
-      <FloatingElement top="60%" left="3%" size="2rem" duration="8s" delay="2s">🛏️</FloatingElement>
-      <FloatingElement bottom="15%" right="5%" size="2.5rem" duration="6s" delay="0.5s">✨</FloatingElement>
+      <FloatingElement $top="8%" $left="5%" $size="2.5rem" $duration="7s">🏨</FloatingElement>
+      <FloatingElement $top="25%" $right="8%" $size="2rem" $duration="5s" $delay="1s">🌿</FloatingElement>
+      <FloatingElement $top="60%" $left="3%" $size="2rem" $duration="8s" $delay="2s">🛏️</FloatingElement>
+      <FloatingElement $bottom="15%" $right="5%" $size="2.5rem" $duration="6s" $delay="0.5s">✨</FloatingElement>
 
       <Container>
-        <Header visible={isVisible}>
+        <Header $visible={isVisible}>
           <HotelIcon>🛏️</HotelIcon>
           <Eyebrow>Wo übernachten?</Eyebrow>
           <Title>Unter<span>künfte</span></Title>
@@ -361,7 +361,7 @@ const Accommodations = () => {
 
         <AccommodationGrid>
           {accommodations.map((hotel, index) => (
-            <AccommodationCard key={index} visible={isVisible} delay={`${0.2 + index * 0.1}s`}>
+            <AccommodationCard key={index} $visible={isVisible} $delay={`${0.2 + index * 0.1}s`}>
               <CardImage>
                 {hotel.icon}
                 {hotel.recommended && <RecommendedBadge>Empfohlen</RecommendedBadge>}
@@ -386,7 +386,7 @@ const Accommodations = () => {
           ))}
         </AccommodationGrid>
 
-        <TipSection visible={isVisible}>
+        <TipSection $visible={isVisible}>
           <TipCard>
             <TipIcon>💡</TipIcon>
             <TipContent>
